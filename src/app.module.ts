@@ -21,7 +21,12 @@ import configuration from "./config/configuration"
         password: configService.get("database.password"),
         database: configService.get("database.database"),
         entities: [__dirname + "/**/*.entity{.ts,.js}"],
-        synchronize: true, // Be cautious with this in production
+        synchronize: configService.get("NODE_ENV") !== "production",
+        migrationsRun: configService.get("NODE_ENV") === "production",
+        migrations: [__dirname + "/migrations/**/*{.ts,.js}"],
+        cli: {
+          migrationsDir: "src/migrations",
+        },
       }),
       inject: [ConfigService],
     }),
