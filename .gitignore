@@ -1,0 +1,19 @@
+echo "# Dependencies
+/node_modules
+/dist
+
+# Environment
+.env
+.env.*
+
+# IDE
+/.idea
+/.vscode
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store" > .gitignore
