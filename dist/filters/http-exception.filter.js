@@ -6,20 +6,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserModule = void 0;
+exports.HttpExceptionFilter = void 0;
 const common_1 = require("@nestjs/common");
-const typeorm_1 = require("@nestjs/typeorm");
-const user_service_1 = require("../user.service");
-const user_controller_1 = require("./user.controller");
-const user_entity_1 = require("./entities/user.entity");
-let UserModule = class UserModule {
+let HttpExceptionFilter = class HttpExceptionFilter {
+    catch(exception, host) {
+        const ctx = host.switchToHttp();
+        const response = ctx.getResponse();
+        const request = ctx.getRequest();
+        const status = exception.getStatus();
+        response.status(status).json({
+            statusCode: status,
+            timestamp: new Date().toISOString(),
+            path: request.url,
+            message: exception.message,
+        });
+    }
 };
-UserModule = __decorate([
-    (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User])],
-        controllers: [user_controller_1.UserController],
-        providers: [user_service_1.UserService],
-        exports: [user_service_1.UserService],
-    })
-], UserModule);
-exports.UserModule = UserModule;
+HttpExceptionFilter = __decorate([
+    (0, common_1.Catch)(common_1.HttpException)
+], HttpExceptionFilter);
+exports.HttpExceptionFilter = HttpExceptionFilter;
