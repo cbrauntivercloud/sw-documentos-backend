@@ -1,35 +1,28 @@
-import { NestFactory } from "@nestjs/core"
-import { ValidationPipe } from "@nestjs/common"
-import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger"
-import { AppModule } from "./app.module"
-import { HttpExceptionFilter } from "./filters/http-exception.filter"
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule);
+  
+  // Habilitar CORS
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
 
-  app.setGlobalPrefix("api")
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  )
-  app.useGlobalFilters(new HttpExceptionFilter())
-  app.enableCors()
+  // Configurar ValidationPipe global
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }));
 
-  const config = new DocumentBuilder()
-    .setTitle("SW Documentos API")
-    .setDescription("API para la gestión de documentos")
-    .setVersion("1.0")
-    .addBearerAuth()
-    .build()
-  const document = SwaggerModule.createDocument(app, config)
-  SwaggerModule.setup("api", app, document)
-
-  const port = process.env.PORT || 3000
-  await app.listen(port)
-  console.log(`Application is running on: ${await app.getUrl()}`)
+  // Usar el puerto proporcionado por Railway o 3000 como fallback
+  const port = process.env.PORT || 3000;
+  
+  await app.listen(port);
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
-bootstrap()
-
+bootstrap();
